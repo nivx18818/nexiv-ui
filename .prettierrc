@@ -1,0 +1,13 @@
+{
+  "plugins": ["prettier-plugin-tailwindcss"],
+  "tailwindStylesheet": "./src/app/globals.css",
+  "tailwindFunctions": ["clsx", "cva", "cn"],
+  "overrides": [
+    {
+      "files": ["*.css"],
+      "options": {
+        "tabWidth": 4
+      }
+    }
+  ]
+}
