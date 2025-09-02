@@ -1,7 +1,7 @@
 import axios, { AxiosError, type AxiosRequestConfig, type Method } from "axios";
 
 const httpRequest = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BASE_API_URL,
+  baseURL: import.meta.env.VITE_BASE_API_URL,
 });
 
 export type HttpResponse<T = unknown> = {
@@ -33,8 +33,7 @@ const request = async <T = unknown>(
       return { data: { success: true } as T, error: null };
     }
 
-    const response = res.data;
-    return { data: response.data as T, error: null };
+    return res.data;
   } catch (err) {
     const error = err as AxiosError<{
       message?: string;
