@@ -2,15 +2,20 @@ import { conversationService } from "@/services";
 import {
   createContext,
   useEffect,
+  useRef,
   useState,
   type PropsWithChildren,
 } from "react";
-import { useParams } from "react-router";
+import { Navigate, useParams } from "react-router";
 
 import type { HttpResponse } from "@/utils/http-request.util";
 
+interface Conversation {
+  id?: string;
+}
+
 interface ConversationContextType {
-  conversation: object | null;
+  conversation: Conversation | null;
 }
 
 const ConversationContext = createContext<ConversationContextType | null>(null);
@@ -19,27 +24,40 @@ type ConversationProviderProps = PropsWithChildren<object>;
 
 function ConversationProvider({ children }: ConversationProviderProps) {
   const { id } = useParams();
-  const [conversation, setConversation] = useState<object | null>({});
+  const [conversation, setConversation] = useState<Conversation | null>(null);
+  const isCreatingRef = useRef(false);
 
   useEffect(() => {
     (async () => {
-      const res = (
-        id
-          ? await conversationService.getById(id)
-          : await conversationService.create()
-      ) as HttpResponse<object>;
+      if (!id) {
+        if (isCreatingRef.current) return;
+        isCreatingRef.current = true;
+
+        const res = await conversationService.create();
+        setConversation(res.data as Conversation);
+
+        return;
+      }
+
+      const res = (await conversationService.getById(
+        id,
+      )) as HttpResponse<object>;
+
+      isCreatingRef.current = false;
       setConversation(res.data);
     })();
-  });
+  }, [id]);
 
   const contextValue = { conversation };
 
   return (
     <ConversationContext.Provider value={contextValue}>
+      {isCreatingRef.current && (
+        <Navigate to={`/c/${conversation?.id}`} replace={true} />
+      )}
       {children}
     </ConversationContext.Provider>
   );
 }
 
-export default ConversationProvider;
-export { ConversationContext };
+export { ConversationContext, ConversationProvider };
