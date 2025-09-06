@@ -1,6 +1,6 @@
 interface Message {
   id: number;
-  role: string;
+  role: "model" | "user";
   content: string;
 }
 
