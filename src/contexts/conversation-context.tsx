@@ -8,11 +8,7 @@ import {
 } from "react";
 import { Navigate, useParams } from "react-router";
 
-import type { HttpResponse } from "@/utils/http-request.util";
-
-interface Conversation {
-  id?: string;
-}
+import type { Conversation } from "@/types/conversation";
 
 interface ConversationContextType {
   conversation: Conversation | null;
@@ -39,9 +35,7 @@ function ConversationProvider({ children }: ConversationProviderProps) {
         return;
       }
 
-      const res = (await conversationService.getById(
-        id,
-      )) as HttpResponse<object>;
+      const res = await conversationService.getById(id);
 
       isCreatingRef.current = false;
       setConversation(res.data);
