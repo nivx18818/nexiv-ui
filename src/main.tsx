@@ -4,6 +4,8 @@ import { BrowserRouter } from "react-router";
 import AppRoutes from "./components/app-routes/index.tsx";
 import "./globals.css";
 
+document.body.classList.add("dark");
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
