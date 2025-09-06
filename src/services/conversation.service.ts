@@ -1,4 +1,4 @@
-import type { Message, Conversation } from "@/types/conversation";
+import type { MessageType, Conversation } from "@/types/conversation";
 import httpRequest from "@/utils/http-request.util";
 
 export const create = async () => {
@@ -12,6 +12,6 @@ export const getById = async (id: string) => {
 };
 
 export const sendMessage = async (id: string, message: string) => {
-  const res = await httpRequest.post<Message>(`/c/${id}`, { message });
+  const res = await httpRequest.post<MessageType>(`/c/${id}`, { message });
   return res;
 };

@@ -4,11 +4,11 @@ import {
   AvatarImage,
 } from "@/components/shadcn-ui/avatar";
 import { cn } from "@/lib/utils";
-import type { UIMessage } from "ai";
+import type { MessageType } from "@/types/conversation";
 import type { ComponentProps, HTMLAttributes } from "react";
 
 export type MessageProps = HTMLAttributes<HTMLDivElement> & {
-  from: UIMessage["role"];
+  from: MessageType["role"];
 };
 
 export const Message = ({ className, from, ...props }: MessageProps) => (

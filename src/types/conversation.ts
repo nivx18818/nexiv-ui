@@ -1,4 +1,4 @@
-interface Message {
+interface MessageType {
   id: number;
   role: "model" | "user";
   content: string;
@@ -6,7 +6,7 @@ interface Message {
 
 interface Conversation {
   id: string;
-  messages: Message[];
+  messages: MessageType[];
 }
 
-export type { Message, Conversation };
+export type { MessageType, Conversation };
