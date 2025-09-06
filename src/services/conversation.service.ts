@@ -12,6 +12,6 @@ export const getById = async (id: string) => {
 };
 
 export const sendMessage = async (id: string, message: string) => {
-  const res = await httpRequest.post<MessageType>(`/c/${id}`, { message });
+  const res = await httpRequest.post<MessageType[]>(`/c/${id}`, { message });
   return res;
 };
