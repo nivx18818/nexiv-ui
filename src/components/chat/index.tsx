@@ -13,16 +13,15 @@ import {
 import { useEffect, useState } from "react";
 import { Response } from "@/components/ai-elements/response";
 import { Loader } from "@/components/ai-elements/loader";
-import { useChat } from "@ai-sdk/react";
 import useConversation from "@/hooks/useConversation";
 import { conversationService } from "@/services";
 import type { MessageType } from "@/types/conversation";
 
 function Chat() {
   const [input, setInput] = useState("");
-  const { status } = useChat();
   const conversation = useConversation();
   const [messages, setMessages] = useState<MessageType[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (conversation?.messages) setMessages(conversation.messages);
@@ -31,19 +30,35 @@ function Chat() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim() && conversation?.id) {
+      const userMessage: MessageType = {
+        id: Date.now(),
+        role: "user",
+        content: input.trim(),
+      };
+
+      setMessages((prev) => [...prev, userMessage]);
+      setInput("");
+      setIsLoading(true);
+
       const res = await conversationService.sendMessage(
         conversation.id,
         input.trim(),
       );
-      if (res.data) setMessages([...messages, ...res.data]);
-      setInput("");
+
+      if (res.data) {
+        setMessages([...messages, ...res.data]);
+      } else {
+        setMessages((prev) => prev.filter((msg) => msg.id !== userMessage.id));
+      }
+
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="relative mx-auto size-full h-screen max-w-4xl p-6">
       <div className="flex h-full flex-col">
-        <Conversation className="h-full modified-scrollbar">
+        <Conversation className="modified-scrollbar h-full">
           <ConversationContent>
             {messages?.map((message, index) => (
               <Message key={message.id || index} from={message.role}>
@@ -52,6 +67,13 @@ function Chat() {
                 </MessageContent>
               </Message>
             ))}
+            {isLoading && (
+              <Message from="model">
+                <MessageContent>
+                  <Loader />
+                </MessageContent>
+              </Message>
+            )}
             {status === "submitted" && <Loader />}
           </ConversationContent>
           <ConversationScrollButton />
@@ -63,7 +85,7 @@ function Chat() {
             value={input}
           />
           <PromptInputToolbar>
-            <PromptInputSubmit disabled={!input.trim()} status={status} />
+            <PromptInputSubmit disabled={!input.trim()} />
           </PromptInputToolbar>
         </PromptInput>
       </div>
